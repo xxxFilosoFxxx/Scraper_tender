@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -31,7 +32,9 @@ def tender1(param):
 
 
 def selenium_parse1(param):
-    driver = webdriver.Firefox()
+    options = Options()
+    options.headless = True
+    driver = webdriver.Firefox(options=options)
     driver.get("http://sberbank-ast.ru")  # /usr/local/bin
     driver.implicitly_wait(0.5)  # seconds
     map_table = []
