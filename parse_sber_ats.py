@@ -4,8 +4,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
 
+import argparse
 import datetime
 import random
 import re
@@ -90,6 +90,29 @@ def selenium_parse1(param):
 #     #             getlinks(newPage)
 
 
+def create_pars():
+    """Создание аргументов командной строки"""
+    parser = argparse.ArgumentParser(
+        prog='Parse_tenders',
+        description='Displays tenders',
+        epilog='(c) xxxFilosoFxxx 2020',
+    )
+    parser.add_argument(
+        '-p', '--param_search',
+        help='input search param',
+        type=str,
+        required=True
+    )
+    return parser
+
+
+def main():
+    """Передача аргументов командной строки исполняемой функции"""
+    parser = create_pars()
+    args = parser.parse_args()
+
+    selenium_parse1(param=args.param_search)
+
+
 if __name__ == '__main__':
-    selenium_parse1("молоко")
-    # tender1("рельсы")
+    main()

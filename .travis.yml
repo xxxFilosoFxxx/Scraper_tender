@@ -1,6 +1,15 @@
 language: python
 
 python:
-  - 3.6.8
   - 3.7
+  - 3.7.2
   - 3.8
+
+services:
+  - docker
+
+before_script:
+  - docker build -t filosof/parse:first .
+
+script:
+  - docker run filosof/parse:first --rm --name first_parse --param_search='хлеб'
