@@ -14,7 +14,7 @@ import time
 random.seed(datetime.datetime.now())
 
 
-# Не подхоит, так как нет тэга 'form'
+# Не подхоит, так как каждый из 'input' привязан к js
 def tender1(param):
     session = requests.Session()
     headers = ({'User-Agent':
@@ -33,28 +33,34 @@ def tender1(param):
 def selenium_parse1(param):
     driver = webdriver.Firefox()
     driver.get("http://sberbank-ast.ru")  # /usr/local/bin
-    list_url = []
-
+    driver.implicitly_wait(0.5)  # seconds
+    map_table = []
     try:
-        element_input = WebDriverWait(driver, 0.2).until(
+        wait = WebDriverWait(driver, 0.2)
+        element_input = wait.until(
             EC.presence_of_element_located((By.ID, "txtUnitedPurchaseSearch")))
 
         element_input.send_keys(param)
         click_element = driver.find_element_by_id("btnUnitedPurchaseSearch")
         click_element.click()
-        # i = 86
-        # while i % 1760 != 0:
-        # TODO: Найти проблему в считывании данных из списка, попробовтаь class="link-button"
-        link = WebDriverWait(driver, 3).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "input#86.link-button")))
-        link.send_keys(Keys.ENTER)
-        list_url.append(link.URL)
-        # i += 93
-        # print(element.text)
+        time.sleep(0.2)
+        # print(driver.current_url)
+        # TODO: Сделать привязку ссылок, осуществить считывание по всем страницам ,попробовать class="link-button"
+        for table in wait.until(EC.presence_of_all_elements_located(
+                (By.XPATH, "//form[@id='aspnetForm']/div[@class='master_open_content']/"
+                           "div/div/div[@id='resultTable']/div/"
+                           "div[@class='purch-reestr-tbl-div']"))):
+            map_table.append(table.text)
+            # print(len(map_table))
+        # page = driver.page_source
+        # soup = BeautifulSoup(page, 'html')
+        # print(soup)
     finally:
         # print(driver.find_element_by_xpath("//div[@class='default_search_border']").text)
-        # time.sleep(3)
-        print(list_url)
+        for table in range(len(map_table)):
+            print(map_table[table])
+            print('<----------------------------->')
+        # print(map_table)
         driver.close()
 
 
