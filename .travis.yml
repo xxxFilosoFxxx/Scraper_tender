@@ -12,4 +12,4 @@ before_script:
   - docker build -t filosof/parse:first .
 
 script:
-  - docker run --rm filosof/parse:first --param_search проверка
+  - docker run --rm filosof/parse:first --param_search "проверка"
