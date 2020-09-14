@@ -1,5 +1,13 @@
-FROM python:3.7-slim-buster
+FROM snakepacker/python:all as builder
 MAINTAINER FilosoF
+
+COPY requirements.txt /mnt/
+
+RUN python3.7 -m venv /usr/share/python3/venv && \
+    /usr/share/python3/venv/bin/pip install -U pip && \
+    /usr/share/python3/venv/bin/pip install -Ur /mnt/requirements.txt
+
+FROM snakepacker/python:3.7 as base
 
 RUN apt-get update && apt-get install -y wget gcc g++ \
     fonts-liberation libappindicator3-1 libasound2 libatk-bridge2.0-0 \
@@ -19,13 +27,13 @@ RUN FIREFOX_SETUP=firefox-setup.tar.bz2 && \
     ln -s /opt/firefox/firefox /usr/bin/firefox && \
     rm $FIREFOX_SETUP
 
-COPY requirements.txt /mnt/
+COPY --from=builder /usr/share/python3/venv /usr/share/python3/venv
+#COPY --from=builder /usr/local/bin/geckodriver /usr/local/bin
+#COPY --from=builder /opt/ /opt/
+#RUN ln -s /opt/firefox/firefox /usr/bin/firefox
 
-WORKDIR /usr/share/python3/
-RUN python3.7 -m venv ./venv && \
-    ./venv/bin/pip install -U pip && \
-    ./venv/bin/pip install -Ur /mnt/requirements.txt
-
-COPY parse_sber_ats.py .
-
-ENTRYPOINT ["./venv/bin/python", "./parse_sber_ats.py"]
+COPY parse_sber_ats.py /usr/share/python3
+COPY config.py /usr/share/python3
+COPY deploy/entrypoint.sh /entrypoint.sh
+RUN chmod 755 /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]

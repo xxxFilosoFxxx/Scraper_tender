@@ -6,7 +6,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-import argparse
+import config as cfg
 import datetime
 import random
 import re
@@ -34,8 +34,8 @@ def tender1(param):
 def selenium_parse1(param):
     options = Options()
     options.headless = True
-    driver = webdriver.Firefox(options=options)
-    driver.get("http://sberbank-ast.ru")  # /usr/local/bin
+    driver = webdriver.Firefox(options=options)  # /usr/local/bin
+    driver.get("http://sberbank-ast.ru")
     driver.implicitly_wait(0.5)  # seconds
     map_table = []
     try:
@@ -93,28 +93,25 @@ def selenium_parse1(param):
 #     #             getlinks(newPage)
 
 
-def create_pars():
-    """Создание аргументов командной строки"""
-    parser = argparse.ArgumentParser(
-        prog='Parse_tenders',
-        description='Displays tenders',
-        epilog='(c) xxxFilosoFxxx 2020',
-    )
-    parser.add_argument(
-        '-p', '--param_search',
-        help='input search param',
-        type=str,
-        required=True
-    )
-    return parser
+# def create_pars():
+#     """Создание аргументов командной строки"""
+#     parser = argparse.ArgumentParser(
+#         prog='Parse_tenders',
+#         description='Displays tenders',
+#         epilog='(c) xxxFilosoFxxx 2020',
+#     )
+#     parser.add_argument(
+#         '-p', '--param_search',
+#         help='input search param',
+#         type=str,
+#         required=True
+#     )
+#     return parser
 
 
 def main():
     """Передача аргументов командной строки исполняемой функции"""
-    parser = create_pars()
-    args = parser.parse_args()
-
-    selenium_parse1(param=args.param_search)
+    selenium_parse1(param=cfg.SEARCH_KEY)
 
 
 if __name__ == '__main__':

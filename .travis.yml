@@ -1,11 +1,16 @@
 language: python
 
 python:
+  - 3.6.8
   - 3.7
-  - 3.7.2
+  - 3.7.8
 
 services:
   - docker
+
+#before_script:
+#  - echo SEARCH_KEY >> cfg
+#  - echo deploy/entrypoint.sh < cfg
 
 script:
   - docker build -t filosof/parse:first .
