@@ -31,39 +31,51 @@ def tender1(param):
     print(search_form)
 
 
+# TODO: сделать тоже самое с переключением страниц
+def trade_all(driver, index=0):
+    while True:
+        all_elem = driver.find_elements_by_xpath(
+            "//form[@id='aspnetForm']/div[@class='master_open_content']/"
+            "div/div/div[@id='resultTable']/div/"
+            "div[@class='purch-reestr-tbl-div']")
+        if index >= len(all_elem):
+            break
+        yield all_elem[index]
+        index += 1
+
+
 def selenium_parse1(param):
     options = Options()
     options.headless = True
     driver = webdriver.Firefox(options=options)  # /usr/local/bin
     driver.get("http://sberbank-ast.ru")
-    driver.implicitly_wait(0.5)  # seconds
+    driver.implicitly_wait(1)  # seconds
     map_table = []
     try:
-        wait = WebDriverWait(driver, 0.2)
+        wait = WebDriverWait(driver, 0.5)
         element_input = wait.until(
             EC.presence_of_element_located((By.ID, "txtUnitedPurchaseSearch")))
 
         element_input.send_keys(param)
         click_element = driver.find_element_by_id("btnUnitedPurchaseSearch")
         click_element.click()
-        time.sleep(0.2)
+        time.sleep(0.1)
         # print(driver.current_url)
-        # TODO: Сделать привязку ссылок, осуществить считывание по всем страницам ,попробовать class="link-button"
-        for table in wait.until(EC.presence_of_all_elements_located(
-                (By.XPATH, "//form[@id='aspnetForm']/div[@class='master_open_content']/"
-                           "div/div/div[@id='resultTable']/div/"
-                           "div[@class='purch-reestr-tbl-div']"))):
+        element_select = driver.find_element_by_xpath("//select[@id='headerPagerSelect']")
+        all_options = element_select.find_elements_by_tag_name("option")
+        all_options[2].click()
+        # TODO: Сделать привязку ссылок
+        for table in trade_all(driver):
             map_table.append(table.text)
-            # print(len(map_table))
+
         # page = driver.page_source
         # soup = BeautifulSoup(page, 'html')
         # print(soup)
     finally:
-        # print(driver.find_element_by_xpath("//div[@class='default_search_border']").text)
         for table in range(len(map_table)):
             print(map_table[table])
             print('<----------------------------->')
-        # print(map_table)
+        print(len(map_table))
         driver.close()
 
 
@@ -93,26 +105,6 @@ def selenium_parse1(param):
 #     #             getlinks(newPage)
 
 
-# def create_pars():
-#     """Создание аргументов командной строки"""
-#     parser = argparse.ArgumentParser(
-#         prog='Parse_tenders',
-#         description='Displays tenders',
-#         epilog='(c) xxxFilosoFxxx 2020',
-#     )
-#     parser.add_argument(
-#         '-p', '--param_search',
-#         help='input search param',
-#         type=str,
-#         required=True
-#     )
-#     return parser
-
-
-def main():
+if __name__ == '__main__':
     """Передача аргументов командной строки исполняемой функции"""
     selenium_parse1(param=cfg.SEARCH_KEY)
-
-
-if __name__ == '__main__':
-    main()

@@ -13,4 +13,4 @@ services:
 #  - echo deploy/entrypoint.sh < cfg
 
 script:
-  - docker build -t filosof/parse:first .
+  - docker build -t  xxxfilosofxxx/parse-repo:first .
