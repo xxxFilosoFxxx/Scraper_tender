@@ -19,7 +19,7 @@ random.seed(datetime.datetime.now())
 def tender1(param):
     session = requests.Session()
     headers = ({'User-Agent':
-                'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36',
+                    'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36',
                 "Accept": "text/html,application/xhtml+xml,application/xml;"
                           "q=0.9,image/webp,*/*;q=0.8"})
 
@@ -32,6 +32,7 @@ def tender1(param):
 
 
 # TODO: сделать тоже самое с переключением страниц
+# Обрабатывает ошибки DOM дерева
 def trade_all(driver, index=0):
     while True:
         all_elem = driver.find_elements_by_xpath(
@@ -65,7 +66,7 @@ def selenium_parse1(param):
     driver.get("http://sberbank-ast.ru")
     driver.implicitly_wait(1)  # seconds
     map_table = []
-    clear_map_table = []
+    clear_table = []
     try:
         wait = WebDriverWait(driver, 0.5)
         element_input = wait.until(
@@ -73,54 +74,31 @@ def selenium_parse1(param):
 
         element_input.send_keys(param)
         click_element = driver.find_element_by_id("btnUnitedPurchaseSearch")
-        click_element.click()
+        click_element.click()  # Переход
         time.sleep(0.1)
         # print(driver.current_url)
         element_select = driver.find_element_by_xpath("//select[@id='headerPagerSelect']")
         all_options = element_select.find_elements_by_tag_name("option")
-        all_options[2].click()
+        all_options[2].click()  # Выставление 100 значений на странице
         # TODO: Сделать привязку ссылок
         for table in trade_all(driver):
             map_table.append(table.text)
 
         start_time = time.time()
-        clear_map_table = word_processing(map_table)
+        reg_table = word_processing(map_table)
+        for i in reg_table:
+            if i[6] != '\n':
+                clear_table.append([i[4], i[0], i[2], i[6], i[-2]])
         print("%f seconds" % (time.time() - start_time))
         # page = driver.page_source
         # soup = BeautifulSoup(page, 'html')
         # print(soup)
     finally:
-        for table in range(len(clear_map_table)):
-            print(clear_map_table[table])
+        for i in range(len(clear_table)):
+            print(clear_table[i])
             print('<----------------------------->')
-        print(len(clear_map_table))
+        print(len(clear_table))
         driver.close()
-
-
-# pages = set()
-# def getlinks(pageUrl):
-#     global pages
-#     # html = urlopen("http://sberbank-ast.ru" + pageUrl)
-#     soup = BeautifulSoup(pageUrl, features="lxml")
-#     try:
-#         for links in soup.findAll('input', class_='link-button'):
-#
-#         print(soup.findAll('div', class_='purch-reestr-tbl-div'))
-#     except ArithmeticError:
-#         print("Warning!")
-#     # try:
-#     #     print(bsObj.h1.get_text())
-#     #     print(bsObj.find(id ="Aw-content-text").findAll("p")[0])
-#     #     print(bsObj.find(id="ca-edit").find("span").find("a").attrs['href'])
-#     # except AttributeError:
-#     #     print("Thi.s page i.s PJi.ssi.ng soPJethi.ng! No worries though!")
-#     # for link in bsObj.findAll("a", href=re.compile("^(/wi.ki./)")):
-#     #     if 'href' in link.attrs:
-#     #         if link.attrs['href'] not in pages:
-#     #             newPage = link.attrs['href']
-#     #             print("----------------\n" + newPage)
-#     #             pages.add(newPage)
-#     #             getlinks(newPage)
 
 
 if __name__ == '__main__':
