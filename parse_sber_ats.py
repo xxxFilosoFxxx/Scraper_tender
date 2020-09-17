@@ -44,13 +44,24 @@ def trade_all(driver, index=0):
         index += 1
 
 
+# На всякий случай при наличии дубликатов
+def clear_duplicate(data):
+    checked = []
+    for e in data:
+        if e not in checked:
+            checked.append(e)
+    return checked
+
+
 def selenium_parse1(param):
     options = Options()
     options.headless = True
     driver = webdriver.Firefox(options=options)  # /usr/local/bin
+    # driver = webdriver.Firefox()
     driver.get("http://sberbank-ast.ru")
     driver.implicitly_wait(1)  # seconds
     map_table = []
+    clear_map_table = []
     try:
         wait = WebDriverWait(driver, 0.5)
         element_input = wait.until(
@@ -68,14 +79,17 @@ def selenium_parse1(param):
         for table in trade_all(driver):
             map_table.append(table.text)
 
+        clear_map_table = clear_duplicate(map_table)
         # page = driver.page_source
         # soup = BeautifulSoup(page, 'html')
         # print(soup)
     finally:
-        for table in range(len(map_table)):
-            print(map_table[table])
-            print('<----------------------------->')
-        print(len(map_table))
+        # for table in range(len(clear_map_table)):
+        #     print(clear_map_table[table])
+        #     print('<----------------------------->')
+        # print(len(clear_map_table))
+        # print('<!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>')
+        print(clear_map_table[0])
         driver.close()
 
 
