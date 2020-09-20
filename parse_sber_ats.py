@@ -19,7 +19,7 @@ random.seed(datetime.datetime.now())
 def tender1(param):
     session = requests.Session()
     headers = ({'User-Agent':
-                    'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36',
+                'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36',
                 "Accept": "text/html,application/xhtml+xml,application/xml;"
                           "q=0.9,image/webp,*/*;q=0.8"})
 
@@ -45,6 +45,23 @@ def trade_all(driver, index=0):
         index += 1
 
 
+def href_trade_all(driver, index=0):
+    while True:
+        all_elem = WebDriverWait(driver, 0.5).until(
+            EC.presence_of_all_elements_located((
+                By.XPATH, "//form[@id='aspnetForm']/div[@class='master_open_content']/"
+                          "div/div/div[@id='resultTable']/div/"
+                          "div[@class='purch-reestr-tbl-div']/"
+                          "table[@class='es-reestr-tbl its']/tbody/"
+                          "tr[@class='dotted-botom last']/td/div/"
+                          "div[@style='display: inline;']/"
+                          "input[@value='Подать заявку']")))
+        if index >= len(all_elem):
+            break
+        yield all_elem[index]
+        index += 1
+
+
 # Обработка текста
 def word_processing(data):
     checked = []
@@ -52,7 +69,8 @@ def word_processing(data):
     string = re.compile(pattern)
     for reg in data:
         may_be = string.findall(reg)
-        negative_facts = ["Рассмотрение", "Завершено", "Завершен(-а)", "Отменен(-а)", "Не", "В", "Подведение"]
+        negative_facts = ["Рассмотрение", "Завершено", "Завершен(-а)", "Отменено", "Отменен(-а)",
+                          "Не", "В", "Подведение", "Опубликован(-а)"]
         if all(l not in may_be[3].replace('\n', '').split()[0] for l in negative_facts):
             checked.append(string.findall(reg))
     return checked
@@ -75,29 +93,32 @@ def selenium_parse1(param):
         element_input.send_keys(param)
         click_element = driver.find_element_by_id("btnUnitedPurchaseSearch")
         click_element.click()  # Переход
-        time.sleep(0.1)
+        time.sleep(0.2)
         # print(driver.current_url)
         element_select = driver.find_element_by_xpath("//select[@id='headerPagerSelect']")
         all_options = element_select.find_elements_by_tag_name("option")
         all_options[2].click()  # Выставление 100 значений на странице
+        time.sleep(0.5)
         # TODO: Сделать привязку ссылок
-        for table in trade_all(driver):
+        for table in href_trade_all(driver):
             map_table.append(table.text)
 
-        start_time = time.time()
-        reg_table = word_processing(map_table)
-        for i in reg_table:
-            if i[6] != '\n':
-                clear_table.append([i[4], i[0], i[2], i[6], i[-2]])
-        print("%f seconds" % (time.time() - start_time))
+        # start_time = time.time()
+        # reg_table = word_processing(map_table)
+        # for i in reg_table:
+        #     if i[6] != '\n':
+        #         clear_table.append([i[4], i[0], i[2], i[6], i[-2]])
+        # print("%f seconds" % (time.time() - start_time))
+
         # page = driver.page_source
         # soup = BeautifulSoup(page, 'html')
         # print(soup)
     finally:
-        for i in range(len(clear_table)):
-            print(clear_table[i])
-            print('<----------------------------->')
-        print(len(clear_table))
+        # for i in range(len(clear_table)):
+        #     print(clear_table[i])
+        #     print('<----------------------------->')
+        # print(len(clear_table))
+        print(len(map_table))
         driver.close()
 
 
