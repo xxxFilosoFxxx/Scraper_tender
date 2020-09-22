@@ -37,7 +37,7 @@ def trade_all(driver, index=0):
         all_elem = driver.find_elements_by_xpath(
             "//form[@id='aspnetForm']/div[@class='master_open_content']/"
             "div/div/div[@id='resultTable']/div/"
-            "div[@class='purch-reestr-tbl-div']")
+            "div[@class='purch-reestr-tbl-div']")  # может взять с [index]
         if index >= len(all_elem):
             break
         # TODO: Переключение страниц
@@ -47,7 +47,7 @@ def trade_all(driver, index=0):
         #                   "tr[@class='dotted-botom last']/td/div/"
         #                   "div[@style='display: inline;']/"
         #                   "input[@value='/  Просмотр']"
-        #         )))
+        #         ))).click()
 
         # href_all_elem = driver.find_elements_by_xpath(
         #     "table[@class='es-reestr-tbl its']/tbody/"
@@ -55,6 +55,7 @@ def trade_all(driver, index=0):
         #     "div[@style='display: inline;']/"
         #     "input[@value='/  Просмотр']"
         # )
+
         # if index >= len(href_all_elem):
         #     break
         yield all_elem[index]  #, href_all_elem[index]
