@@ -1,3 +1,3 @@
 import os
 
-SEARCH_KEY = os.environ.get('SEARCH_KEY', 'молоко')
+SEARCH_KEY = os.environ.get('SEARCH_KEY', 'тендер')

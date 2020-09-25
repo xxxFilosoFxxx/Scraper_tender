@@ -33,9 +33,9 @@ def tender1(param):
 
 
 # Обрабатывает ссылки нужных тендеров
-def href_trade_all(driver, i=0):
+def href_trade_all(driver, index=0):
     href_list = []
-    while i < 100:
+    while index < 50:
         href_all_elem = WebDriverWait(driver, 0.5).until(
                 EC.presence_of_all_elements_located((
                     By.XPATH, "//form[@id='aspnetForm']/div[@class='master_open_content']/"
@@ -44,15 +44,16 @@ def href_trade_all(driver, i=0):
                               "table[@class='es-reestr-tbl its']/tbody/"
                               "tr[@class='dotted-botom last']/td/div[@class='element-in-one-row']")))
         try:
-            WebDriverWait(href_all_elem[i], 0.1).until(EC.presence_of_all_elements_located((
+            WebDriverWait(href_all_elem[index], 0.1).until(EC.presence_of_all_elements_located((
                     By.XPATH, "div[@style='display: inline;']/input[@value='Подать заявку']")))
 
-            button = WebDriverWait(href_all_elem[i], 0.2).until(EC.element_to_be_clickable((
+            button = WebDriverWait(href_all_elem[index], 0.2).until(EC.element_to_be_clickable((
                 By.XPATH, "input[@type='button' and @value='/  Просмотр']")))
-
             # button = href_all_elem[i].find_element_by_xpath("input[@type='button' and @value='/  Просмотр']")
             driver.execute_script("arguments[0].click();", button)
             driver.switch_to_window(driver.window_handles[-1])
+            while str(driver.current_url) == "about:blank":
+                pass
             url = str(driver.current_url)
             href_list.append(url)
             driver.close()
@@ -61,10 +62,7 @@ def href_trade_all(driver, i=0):
             pass
         except TimeoutException:
             pass
-        i += 1
-    # for j in href_list:
-    #     print(j)
-    # TODO: Записывает ссылки, и потом они преобразовываются в None
+        index += 1
     return href_list
 
 
@@ -121,11 +119,14 @@ def selenium_parse1(param):
         # print(driver.current_url)
         element_select = driver.find_element_by_xpath("//select[@id='headerPagerSelect']")
         all_options = element_select.find_elements_by_tag_name("option")
-        all_options[2].click()  # Выставление 100 значений на странице
+        all_options[1].click()  # Выставление 50 значений на странице
 
         for table in href_trade_all(driver):
             map_table.append(table)
 
+        # TODO: сопоставить ссылки с выкаченной информацией
+        # for table in trade_all(driver):
+        #     map_table.append(table.text)
         # start_time = time.time()
         # reg_table = word_processing(map_table)
         # for i in reg_table:
