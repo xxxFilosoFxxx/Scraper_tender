@@ -46,7 +46,7 @@ def href_trade_all(driver, index=0):
         try:
             WebDriverWait(href_all_elem[index], 0.1).until(EC.presence_of_all_elements_located((
                     By.XPATH, "div[@style='display: inline;']/input[@value='Подать заявку']")))
-
+            # TODO: возможно ли ускорить?
             button = WebDriverWait(href_all_elem[index], 0.2).until(EC.element_to_be_clickable((
                 By.XPATH, "input[@type='button' and @value='/  Просмотр']")))
             # button = href_all_elem[i].find_element_by_xpath("input[@type='button' and @value='/  Просмотр']")
@@ -94,7 +94,7 @@ def word_processing(data):
     return checked
 
 
-# TODO: сделать ассинхронные запросы, если возможно
+# TODO: среднеее время на 50 запросов: 80 сек., попробовать ускорить алгоритм
 def selenium_parse1(param):
     options = Options()
     options.headless = True
@@ -106,6 +106,7 @@ def selenium_parse1(param):
     driver.get("http://sberbank-ast.ru")
     driver.implicitly_wait(1)  # seconds
     map_table = []
+    href_table = []
     clear_table = []
     try:
         wait = WebDriverWait(driver, 0.5)
@@ -116,36 +117,33 @@ def selenium_parse1(param):
         click_element = driver.find_element_by_id("btnUnitedPurchaseSearch")
         click_element.click()  # Переход
         time.sleep(0.2)
-        # print(driver.current_url)
         element_select = driver.find_element_by_xpath("//select[@id='headerPagerSelect']")
         all_options = element_select.find_elements_by_tag_name("option")
         all_options[1].click()  # Выставление 50 значений на странице
 
+        start_time = time.time()
         for table in href_trade_all(driver):
-            map_table.append(table)
+            href_table.append(table)
 
-        # TODO: сопоставить ссылки с выкаченной информацией
-        # for table in trade_all(driver):
-        #     map_table.append(table.text)
-        # start_time = time.time()
-        # reg_table = word_processing(map_table)
-        # for i in reg_table:
-        #     if i[6] != '\n':
-        #         clear_table.append([i[4], i[0], i[2], i[6], i[-2]])
-        # print("%f seconds" % (time.time() - start_time))
+        for table in trade_all(driver):
+            map_table.append(table.text)
+
+        reg_table = word_processing(map_table)
+        h = 0
+        for i in reg_table:
+            if i[6] != '\n':
+                clear_table.append([i[4], i[0], i[2], i[6], i[-2], href_table[h]])
+                h += 1
+        print("%f seconds" % (time.time() - start_time))
 
         # page = driver.page_source
         # soup = BeautifulSoup(page, 'html')
         # print(soup)
     finally:
-        # for i in range(len(clear_table)):
-        #     print(clear_table[i])
-        #     print('<----------------------------->')
-        # print(len(clear_table))
-        for i in range(len(map_table)):
-            print(map_table[i])
+        for i in range(len(clear_table)):
+            print(clear_table[i])
             print('<----------------------------->')
-        print(len(map_table))
+        print(len(clear_table))
         driver.close()
 
 
