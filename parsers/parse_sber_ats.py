@@ -7,7 +7,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-import config as cfg
+from parsers import config as cfg
 import datetime
 import random
 import re
@@ -17,19 +17,19 @@ random.seed(datetime.datetime.now())
 
 
 # Не подхоит, так как каждый из 'input' привязан к js
-def tender1(param):
-    session = requests.Session()
-    headers = ({'User-Agent':
-                'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36',
-                "Accept": "text/html,application/xhtml+xml,application/xml;"
-                          "q=0.9,image/webp,*/*;q=0.8"})
-
-    sber = "http://sberbank-ast.ru"
-    responce = session.get(sber, headers=headers)
-    soup = BeautifulSoup(responce.text, 'html.parser')
-    # search_form = soup.find_all('input', "default_search_input1")
-    search_form = soup.find_all('div', "default_search_border")
-    print(search_form)
+# def tender1(param):
+#     session = requests.Session()
+#     headers = ({'User-Agent':
+#                 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36',
+#                 "Accept": "text/html,application/xhtml+xml,application/xml;"
+#                           "q=0.9,image/webp,*/*;q=0.8"})
+#
+#     sber = "http://sberbank-ast.ru"
+#     responce = session.get(sber, headers=headers)
+#     soup = BeautifulSoup(responce.text, 'html.parser')
+#     # search_form = soup.find_all('input', "default_search_input1")
+#     search_form = soup.find_all('div', "default_search_border")
+#     print(search_form)
 
 
 # Обрабатывает ссылки нужных тендеров
@@ -94,7 +94,7 @@ def word_processing(data):
     return checked
 
 
-# TODO: среднеее время на 50 запросов: 80 сек., попробовать ускорить алгоритм
+# TODO: среднеее время на 50 запросов: 70 сек., попробовать ускорить алгоритм
 def selenium_parse1(param):
     options = Options()
     options.headless = True

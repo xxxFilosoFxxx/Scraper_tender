@@ -1,7 +1,8 @@
 #!/bin/bash
 
-cd /usr/share/python3
 . venv/bin/activate
+
+cd parsers
 
 read -r -p "Search tender key: " SEARCH_KEY
 if [[ "${SEARCH_KEY}" == "" ]]
