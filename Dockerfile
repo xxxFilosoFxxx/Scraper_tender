@@ -27,12 +27,12 @@ RUN FIREFOX_SETUP=firefox-setup.tar.bz2 && \
     ln -s /opt/firefox/firefox /usr/bin/firefox && \
     rm $FIREFOX_SETUP
 
-WORKDIR /usr/share/python3
-
-COPY --from=builder /usr/share/python3/venv /venv
+COPY --from=builder /usr/share/python3/venv /usr/share/python3/venv
 #COPY --from=builder /usr/local/bin/geckodriver /usr/local/bin
 #COPY --from=builder /opt/ /opt/
 #RUN ln -s /opt/firefox/firefox /usr/bin/firefox
+
+WORKDIR /usr/share/python3
 
 COPY parsers .
 COPY deploy/entrypoint.sh /entrypoint.sh
