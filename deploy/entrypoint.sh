@@ -2,8 +2,6 @@
 
 . venv/bin/activate
 
-cd parsers
-
 read -r -p "Search tender key: " SEARCH_KEY
 if [[ "${SEARCH_KEY}" == "" ]]
 then
